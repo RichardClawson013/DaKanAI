@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+codes.json
+output/
+__pycache__/
+*.pyc
+.venv/
+hermes-agent/
+hermes-home/

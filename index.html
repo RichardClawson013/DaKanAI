@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DaKanAI — Intake</title>
+  <meta name="description" content="Leg de stilzwijgende kennis van je bedrijf vast in een interview." />
+  <style>
+    :root {
+      --color-bg: oklch(15% 0.028 300);
+      --color-bg-deep: oklch(11% 0.03 300);
+      --color-surface: oklch(20% 0.032 300);
+      --color-surface-raised: oklch(24% 0.034 300);
+      --color-border: oklch(32% 0.03 300);
+      --color-border-soft: oklch(27% 0.03 300);
+      --color-text: oklch(92% 0.015 90);
+      --color-text-muted: oklch(68% 0.02 290);
+      --color-gold: oklch(80% 0.13 86);
+      --color-gold-contrast: oklch(16% 0.03 300);
+      --color-orange: oklch(58% 0.16 42);
+      --color-orange-contrast: oklch(97% 0.01 90);
+      --font-serif: "Iowan Old Style", "Palatino Linotype", "URW Palladio", Palatino, P052, ui-serif, Georgia, serif;
+      --font-sans: ui-sans-serif, "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      --text-hero: clamp(2rem, 1.5rem + 2vw, 3.1rem);
+      --text-h2: clamp(1.2rem, 1.05rem + 0.5vw, 1.5rem);
+      --text-base: clamp(1rem, 0.95rem + 0.2vw, 1.05rem);
+      --space-section: clamp(2.5rem, 1.8rem + 2.5vw, 5rem);
+      --space-md: 1rem;
+      --space-lg: 1.85rem;
+      --radius-lg: 18px;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --duration-fast: 150ms;
+      --duration-normal: 420ms;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% -10%, oklch(28% 0.05 300 / 0.55), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 85% 15%, oklch(35% 0.09 42 / 0.14), transparent 55%),
+        var(--color-bg-deep);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    h1, h2 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: 0.005em;
+      margin: 0 0 var(--space-md);
+      color: var(--color-text);
+    }
+    h1 { font-size: var(--text-hero); }
+    h2 { font-size: var(--text-h2); }
+
+    .site-header {
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: var(--space-section) var(--space-lg) var(--space-md);
+      width: 100%;
+    }
+    .merk {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin: 0 0 0.5rem;
+      color: var(--color-gold);
+    }
+    .tagline {
+      color: var(--color-text-muted);
+      margin: 0;
+      max-width: 32rem;
+      font-size: 1.05rem;
+    }
+
+    main {
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: 0 var(--space-lg) var(--space-section);
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .scherm {
+      background:
+        linear-gradient(165deg, oklch(100% 0 0 / 0.03), transparent 40%),
+        var(--color-surface);
+      border: 1px solid var(--color-border-soft);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin-block: var(--space-md);
+      box-shadow: 0 1px 0 oklch(100% 0 0 / 0.04) inset, 0 18px 40px -24px oklch(0% 0 0 / 0.55);
+    }
+    .scherm[hidden] { display: none; }
+
+    /* Chat-scherm neemt alle ruimte */
+    .scherm-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 60vh;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 0.45rem;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg-deep);
+      color: var(--color-text);
+      font-size: 1rem;
+      font-family: inherit;
+      margin-bottom: var(--space-md);
+      transition: border-color var(--duration-fast) var(--ease-out-expo),
+                  box-shadow var(--duration-fast) var(--ease-out-expo);
+    }
+    input[type="text"]:focus-visible,
+    textarea:focus-visible,
+    button:focus-visible {
+      outline: none;
+      border-color: var(--color-gold);
+      box-shadow: 0 0 0 3px oklch(80% 0.13 86 / 0.28);
+    }
+
+    button {
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      padding: 0.7rem 1.2rem;
+      background: linear-gradient(155deg, var(--color-gold), var(--color-orange));
+      color: var(--color-gold-contrast);
+      transition: transform var(--duration-fast) var(--ease-out-expo),
+                  box-shadow var(--duration-normal) var(--ease-out-expo),
+                  opacity var(--duration-fast);
+    }
+    button:hover { box-shadow: 0 10px 26px -12px oklch(80% 0.13 86 / 0.55); }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .knop-secundair {
+      background: transparent;
+      color: var(--color-gold);
+      border-color: var(--color-border);
+    }
+    .knop-secundair:hover { border-color: var(--color-gold); box-shadow: none; }
+
+    .fout-melding {
+      color: var(--color-orange);
+      border: 1px solid oklch(58% 0.16 42 / 0.5);
+      background: oklch(58% 0.16 42 / 0.08);
+      border-radius: var(--radius);
+      padding: 0.65rem 0.9rem;
+      margin: var(--space-md) 0;
+    }
+
+    /* Transcript / chat log */
+    .transcript-log {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: var(--space-md);
+      padding-right: 0.5rem;
+    }
+
+    .bericht {
+      max-width: 85%;
+      padding: 0.7rem 0.95rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border-soft);
+      animation: bericht-in var(--duration-normal) var(--ease-out-expo) both;
+    }
+
+    @keyframes bericht-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bericht--ondernemer {
+      align-self: flex-end;
+      background: linear-gradient(155deg, var(--color-gold), var(--color-orange));
+      color: var(--color-gold-contrast);
+      border-color: transparent;
+    }
+
+    .bericht--interviewer {
+      align-self: flex-start;
+      background: var(--color-bg-deep);
+      border-left: 2px solid var(--color-gold);
+    }
+
+    .bericht--systeem {
+      align-self: center;
+      background: transparent;
+      border: none;
+      color: var(--color-text-muted);
+      font-style: italic;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .bericht--typing {
+      align-self: flex-start;
+      background: transparent;
+      border: none;
+      color: var(--color-text-muted);
+      font-style: italic;
+      padding: 0.5rem 0.95rem;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .bericht__spreker {
+      margin: 0 0 0.2rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+    }
+
+    .bericht__tekst {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    /* Chat input bar */
+    .chat-invoer {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+    .chat-invoer textarea {
+      flex: 1;
+      margin-bottom: 0;
+      resize: none;
+      min-height: 2.6rem;
+      max-height: 8rem;
+    }
+    .chat-invoer button {
+      flex-shrink: 0;
+      margin-bottom: 0;
+    }
+
+    /* Interview naam in header */
+    #interview-naam {
+      color: var(--color-gold);
+      font-family: var(--font-serif);
+    }
+
+    /* Resultaat */
+    .resultaat-tekst {
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-lg);
+    }
+
+    .downloadlijst {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: var(--space-lg);
+    }
+    .downloadlijst li a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 0.95rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-gold);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: border-color var(--duration-fast) var(--ease-out-expo),
+                  box-shadow var(--duration-fast) var(--ease-out-expo);
+    }
+    .downloadlijst li a:hover {
+      border-color: var(--color-gold);
+      box-shadow: 0 8px 22px -16px oklch(80% 0.13 86 / 0.6);
+    }
+    .downloadlijst li a .dl-icoon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .downloadlijst li a .dl-uitleg {
+      color: var(--color-text-muted);
+      font-weight: 400;
+      font-size: 0.85rem;
+      margin-left: auto;
+    }
+
+    .downloadlijst li {
+      display: flex;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+    .downloadlijst li a { flex: 1; min-width: 0; }
+
+    .kopieer-knop {
+      flex-shrink: 0;
+      padding: 0.65rem 0.9rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-muted);
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color var(--duration-fast) var(--ease-out-expo),
+                  color var(--duration-fast) var(--ease-out-expo),
+                  box-shadow var(--duration-fast) var(--ease-out-expo);
+    }
+    .kopieer-knop:hover {
+      border-color: var(--color-gold);
+      color: var(--color-gold);
+      box-shadow: 0 8px 22px -16px oklch(80% 0.13 86 / 0.6);
+    }
+    .kopieer-knop:focus-visible {
+      outline: 2px solid var(--color-gold);
+      outline-offset: 2px;
+    }
+    .kopieer-knop:active { transform: translateY(1px); }
+    .kopieer-knop[data-gekopieerd="ja"] {
+      border-color: var(--color-gold);
+      color: var(--color-gold);
+    }
+
+    .site-footer {
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: 0 var(--space-lg) var(--space-section);
+      color: var(--color-text-muted);
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <p class="merk">DaKanAI</p>
+    <p class="tagline">Leg vast wat je bedrijf draaiende houdt — in jouw woorden, met bewijs.</p>
+  </header>
+
+  <main>
+    <!-- Scherm 1: Toegangscode -->
+    <section id="scherm-code" class="scherm" aria-labelledby="code-titel">
+      <h1 id="code-titel">Welkom</h1>
+      <p style="color: var(--color-text-muted); margin-bottom: var(--space-lg);">
+        Vul je toegangscode in om het interview te starten.
+      </p>
+      <form id="form-code">
+        <label for="input-code">Toegangscode</label>
+        <input id="input-code" name="code" type="text" autocomplete="off" placeholder="Van je DaKanAI-contact" />
+        <button type="submit">Versturen</button>
+      </form>
+      <div id="code-fout" class="fout-melding" hidden></div>
+    </section>
+
+    <!-- Scherm 2: Interview -->
+    <section id="scherm-chat" class="scherm scherm-chat" hidden aria-labelledby="chat-titel">
+      <h2 id="chat-titel">Interview <span id="interview-naam"></span></h2>
+      <div id="transcript-log" class="transcript-log" aria-live="polite"></div>
+      <div class="chat-invoer">
+        <textarea id="input-antwoord" rows="1" placeholder="Typ je antwoord..." disabled></textarea>
+        <button id="btn-verstuur" type="button" disabled>Verstuur</button>
+      </div>
+    </section>
+
+    <!-- Scherm 3: Resultaat -->
+    <section id="scherm-resultaat" class="scherm" hidden aria-labelledby="resultaat-titel">
+      <h1 id="resultaat-titel">Interview afgerond</h1>
+      <p class="resultaat-tekst">Bedankt voor je tijd. Hieronder kun je de resultaten downloaden.</p>
+      <ul id="downloadlijst" class="downloadlijst"></ul>
+      <button id="btn-opnieuw" type="button" class="knop-secundair">Opnieuw beginnen</button>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Niets van dit gesprek wordt op een externe server bewaard.</p>
+  </footer>
+
+  <script>
+    const API_URL = localStorage.getItem("dakanai_api") || "https://tones-taxi-jaguar-cingular.trycloudflare.com";
+
+    const $ = id => document.getElementById(id);
+    const schermen = [$("scherm-code"), $("scherm-chat"), $("scherm-resultaat")];
+
+    function toonScherm(el) {
+      schermen.forEach(s => {
+        if (s === el) s.removeAttribute("hidden");
+        else s.setAttribute("hidden", "");
+      });
+    }
+
+    let code = "";
+    let bezig = false;
+
+    // --- Berichten ---
+    function voegBerichtToe(type, tekst) {
+      const div = document.createElement("div");
+      div.className = "bericht bericht--" + type;
+
+      const spreker = document.createElement("p");
+      spreker.className = "bericht__spreker";
+      spreker.textContent = type === "interviewer" ? "DaKanAI" : type === "ondernemer" ? "Jij" : "";
+
+      const inhoud = document.createElement("p");
+      inhoud.className = "bericht__tekst";
+      inhoud.textContent = tekst;
+
+      if (type !== "systeem") div.appendChild(spreker);
+      div.appendChild(inhoud);
+
+      $("transcript-log").appendChild(div);
+      $("transcript-log").scrollTop = $("transcript-log").scrollHeight;
+    }
+
+    function toonTyping() {
+      const div = document.createElement("div");
+      div.className = "bericht bericht--typing";
+      div.id = "typing-indicator";
+      div.textContent = "DaKanAI denkt na...";
+      $("transcript-log").appendChild(div);
+      $("transcript-log").scrollTop = $("transcript-log").scrollHeight;
+    }
+
+    function verwijderTyping() {
+      const el = $("typing-indicator");
+      if (el) el.remove();
+    }
+
+    function zetInputActief(actief) {
+      $("input-antwoord").disabled = !actief;
+      $("btn-verstuur").disabled = !actief;
+      if (actief) $("input-antwoord").focus();
+    }
+
+    // --- Code-formulier ---
+    $("form-code").addEventListener("submit", async e => {
+      e.preventDefault();
+      code = $("input-code").value.trim();
+      if (!code) return;
+      $("code-fout").hidden = true;
+
+      try {
+        const resp = await fetch(API_URL + "/interview/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          $("code-fout").textContent = data.error || "Fout bij het starten.";
+          $("code-fout").hidden = false;
+          return;
+        }
+        toonScherm($("scherm-chat"));
+        $("transcript-log").innerHTML = "";
+        voegBerichtToe("interviewer", data.tekst);
+        zetInputActief(true);
+      } catch (err) {
+        $("code-fout").textContent = "Kan de server niet bereiken. Is hij aan?";
+        $("code-fout").hidden = false;
+      }
+    });
+
+    // --- Chat ---
+    async function verstuur() {
+      const tekst = $("input-antwoord").value.trim();
+      if (!tekst || bezig) return;
+      bezig = true;
+
+      voegBerichtToe("ondernemer", tekst);
+      $("input-antwoord").value = "";
+      zetInputActief(false);
+      toonTyping();
+
+      try {
+        const resp = await fetch(API_URL + "/interview/bericht", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, tekst }),
+        });
+        verwijderTyping();
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          voegBerichtToe("systeem", data.error || "Er ging iets mis.");
+          zetInputActief(true);
+          bezig = false;
+          return;
+        }
+
+        if (data.tekst) {
+          voegBerichtToe("interviewer", data.tekst);
+        }
+
+        if (data.beurten) {
+          for (const b of data.beurten) {
+            if (b.type === "naamstap") {
+              $("interview-naam").textContent = "— " + b.naam;
+            }
+          }
+        }
+
+        if (data.afgerond) {
+          toonBestanden(data.bestanden || {});
+          toonScherm($("scherm-resultaat"));
+        } else {
+          zetInputActief(true);
+        }
+      } catch (err) {
+        verwijderTyping();
+        voegBerichtToe("systeem", "Verbinding verloren. Probeer opnieuw.");
+        zetInputActief(true);
+      }
+      bezig = false;
+    }
+
+    $("btn-verstuur").addEventListener("click", verstuur);
+    $("input-antwoord").addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        verstuur();
+      }
+    });
+
+    // Auto-resize textarea
+    $("input-antwoord").addEventListener("input", function() {
+      this.style.height = "auto";
+      this.style.height = Math.min(this.scrollHeight, 128) + "px";
+    });
+
+    // --- Bestanden tonen ---
+    const BESTANDS_META = {
+      "wereldmodel.json": { icoon: "\u{1F30D}", uitleg: "Gestructureerd kennismodel" },
+      "ziel.md":           { icoon: "\u{1F4AB}", uitleg: "Kernprincipes en waarden" },
+      "agents.md":         { icoon: "\u{1F465}", uitleg: "Rollen en verantwoordelijkheden" },
+      "skills.md":         { icoon: "\u{1F3AF}", uitleg: "Vaardigheden en competenties" },
+      "tools.md":          { icoon: "\u{1F527}", uitleg: "Gereedschappen en systemen" },
+      "rapport.html":      { icoon: "\u{1F4CA}", uitleg: "Visueel rapport" },
+      "open_onderwerpen.md": { icoon: "\u{1F4DD}", uitleg: "Nog uit te diepen" },
+      "transcript.json":   { icoon: "\u{1F4AC}", uitleg: "Volledig gespreksverslag" },
+    };
+
+    // De compiler zet de naam van de werknemer in de bestandsnaam
+    // (skills_johnny.md). Zoek daarom op het deel voor de underscore.
+    function zoekMeta(naam) {
+      if (BESTANDS_META[naam]) return BESTANDS_META[naam];
+      const stam = naam.split("_")[0];
+      for (const [sleutel, meta] of Object.entries(BESTANDS_META)) {
+        if (sleutel.split("_")[0].split(".")[0] === stam) return meta;
+      }
+      return { icoon: "\u{1F4C4}", uitleg: "" };
+    }
+
+    async function kopieer(inhoud, knop) {
+      try {
+        await navigator.clipboard.writeText(inhoud);
+      } catch (e) {
+        // Klembord geweigerd (geen https of geen toestemming): dan selecteren
+        // we de tekst in een tijdelijk veld, zodat kopiëren altijd lukt.
+        const veld = document.createElement("textarea");
+        veld.value = inhoud;
+        veld.setAttribute("readonly", "");
+        veld.style.position = "fixed";
+        veld.style.opacity = "0";
+        document.body.appendChild(veld);
+        veld.select();
+        try { document.execCommand("copy"); } catch (_) {}
+        document.body.removeChild(veld);
+      }
+      const oud = knop.textContent;
+      knop.textContent = "Gekopieerd";
+      knop.setAttribute("data-gekopieerd", "ja");
+      setTimeout(() => {
+        knop.textContent = oud;
+        knop.removeAttribute("data-gekopieerd");
+      }, 1600);
+    }
+
+    function toonBestanden(bestanden) {
+      const lijst = $("downloadlijst");
+      lijst.innerHTML = "";
+      for (const [naam, inhoud] of Object.entries(bestanden)) {
+        const meta = zoekMeta(naam);
+        const blob = new Blob([inhoud], { type: "application/octet-stream" });
+        const url = URL.createObjectURL(blob);
+
+        const li = document.createElement("li");
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = naam;
+        link.innerHTML = '<span class="dl-icoon">' + meta.icoon + '</span>';
+        link.appendChild(document.createTextNode(naam));
+        const uitleg = document.createElement("span");
+        uitleg.className = "dl-uitleg";
+        uitleg.textContent = meta.uitleg;
+        link.appendChild(uitleg);
+
+        const knop = document.createElement("button");
+        knop.type = "button";
+        knop.className = "kopieer-knop";
+        knop.textContent = "Kopieer";
+        knop.setAttribute("aria-label", "Kopieer de inhoud van " + naam);
+        knop.addEventListener("click", () => kopieer(inhoud, knop));
+
+        li.appendChild(link);
+        li.appendChild(knop);
+        lijst.appendChild(li);
+      }
+    }
+
+    // --- Opnieuw ---
+    $("btn-opnieuw").addEventListener("click", () => {
+      toonScherm($("scherm-code"));
+      $("input-code").value = "";
+      $("interview-naam").textContent = "";
+    });
+  </script>
+</body>
+</html>
